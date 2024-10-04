@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { auth, db } from '../services/firebase'; // Asegúrate de que la configuración de firebase sea correcta
+import { auth, db } from '../services/firebase';
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
-import '../App.css'; // Importa el archivo CSS
+import { useNavigate } from 'react-router-dom';
+import '../App.css';
 
 const Register = ({ onSwitch }) => {
   const [email, setEmail] = useState('');
@@ -34,9 +35,9 @@ const Register = ({ onSwitch }) => {
   };
 
   return (
-    <div className="App"> {/* Asegúrate de que esta clase esté presente */}
-      <div className="container"> {/* Container con estilos */}
-        <div className="title">Bienvenido a WorkMind Zen</div>
+    <div className="App">
+      <div className="container">
+        <div className="title">Registro</div>
         <form onSubmit={handleRegister}>
           <input
             type="text"
@@ -62,9 +63,9 @@ const Register = ({ onSwitch }) => {
           <button type="submit">Registrarse</button>
         </form>
         <p>
-          ¿Ya tienes cuenta? <span onClick={onSwitch} style={{ cursor: 'pointer', color: 'blue' }}>Inicia sesión</span>
+          <span onClick={onSwitch} className="switch-link">Volver al inicio de sesión</span>
         </p>
-        {error && <p className="error">{error}</p>} {/* Mensaje de error */}
+        {error && <p className="error">{error}</p>}
       </div>
     </div>
   );

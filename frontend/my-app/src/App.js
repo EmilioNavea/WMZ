@@ -1,9 +1,9 @@
-// src/App.js
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'; // Importa los módulos necesarios
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/Login';
 import Register from './components/Register';
 import Home from './components/Home';
+import ForgotPassword from './components/ForgotPassword';
 import './App.css';
 
 const App = () => {
@@ -17,9 +17,10 @@ const App = () => {
     <Router>
       <div className="App">
         <Routes>
-          <Route path="/" element={isLogin ? <Login onSwitch={toggleForm} /> : <Register onSwitch={toggleForm} />} />
+        <Route path="/" element={isLogin ? <Login onSwitch={toggleForm} /> : <Register onSwitch={toggleForm} />} />
           <Route path="/home" element={<Home />} />
-          <Route path="*" element={<Navigate to="/" />} /> {/* Redirige a la página de inicio */}
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </div>
     </Router>
