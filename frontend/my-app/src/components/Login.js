@@ -1,8 +1,9 @@
 // Login.js
 import React, { useState } from 'react';
 import axios from 'axios';
-import '../App.css';
 import { useNavigate } from 'react-router-dom';
+import { auth } from '../firebaseconfig'; // Asegúrate de que la ruta sea correcta
+import { signInWithEmailAndPassword } from 'firebase/auth'; // Importa la función para autenticar
 
 const Login = ({ onSwitch }) => {
   const [email, setEmail] = useState('');
@@ -12,30 +13,35 @@ const Login = ({ onSwitch }) => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setError('');
+
     try {
+      // Autentica el usuario en el frontend
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Obtiene el token JWT
+      const idToken = await user.getIdToken();
+
+      // Envía el token al backend
       const response = await axios.post('http://127.0.0.1:5000/login', {
-        email,
-        password,
+        token: idToken,
       });
 
-      if (response && response.data && response.data.success) {
+      if (response.data.success) {
         alert("Inicio de sesión exitoso");
         navigate("/home");
       } else {
-        alert("Credenciales incorrectas");
+        setError("Credenciales incorrectas");
       }
     } catch (error) {
       console.error("Error al iniciar sesión: ", error);
-      if (error.response) {
-        setError("Error al iniciar sesión: " + (error.response.data ? error.response.data.error : "Ocurrió un error inesperado."));
-      } else {
-        setError("Error de conexión: " + error.message);
-      }
+      setError("Error al iniciar sesión: " + (error.response?.data?.error || "Ocurrió un error inesperado."));
     }
   };
 
   const handleForgotPassword = () => {
-    navigate("/forgot-password"); // Redirige a la página de recuperación de contraseña
+    navigate("/forgot-password");
   };
 
   return (
