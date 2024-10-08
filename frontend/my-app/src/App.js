@@ -1,10 +1,11 @@
-// src/App.js
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/Login';
 import Register from './components/Register';
 import Home from './components/Home';
 import ForgotPassword from './components/ForgotPassword';
+import Profile from './components/Profile'; // Importa el componente Profile
+import ImportantInfo from './components/ImportantInfo';
 import Header from './components/Header'; // Importa el Header
 import './App.css';
 
@@ -22,6 +23,8 @@ const App = () => {
         <Routes>
           <Route path="/" element={isLogin ? <Login onSwitch={toggleForm} /> : <Register onSwitch={toggleForm} />} />
           <Route path="/home" element={<Home />} />
+          <Route path="/profile" element={<Profile />} /> {/* Nueva ruta para el perfil */}
+          <Route path="/important-info" element={<ImportantInfo />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
