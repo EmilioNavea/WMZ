@@ -1,8 +1,8 @@
+// src/components/Register.js
 import React, { useState } from 'react';
 import { auth, db } from '../services/firebase';
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
-import { useNavigate } from 'react-router-dom';
 import '../App.css';
 
 const Register = ({ onSwitch }) => {

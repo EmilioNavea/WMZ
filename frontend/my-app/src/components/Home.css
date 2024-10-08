@@ -1,118 +1,222 @@
 /* src/components/Home.css */
+
+/* Estilos para el contenedor general */
 .home-container {
-    display: flex;
-    height: 100vh; /* Asegúrate de que ocupe toda la altura de la ventana */
-    overflow: hidden; /* Evitar el desbordamiento */
-  }
-  
-  .sidebar {
-    width: 200px; /* Ancho de la barra lateral */
-    background-color: #ffffff; /* Color de fondo blanco */
-    padding: 67px 0; /* Cambiado el padding para reducir la altura */
-    display: flex;
-    flex-direction: column;
-    position: fixed; /* Mantener la barra lateral en la posición fija */
-    top: 60px; /* Aumenta este valor para mover la barra más abajo */
-    left: 0; /* Pegado al lado izquierdo */
-    height: 80%; /* Ocupar toda la altura */
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Añadir sombra para separar visualmente */
-    z-index: 1000; /* Asegurarse de que la barra de navegación esté por encima */
-  }
-  
-  .sidebar-item {
-    background-color: #ffffff; /* Color de fondo blanco para las opciones */
-    border: none;
-    padding: 15px; /* Espaciado interno */
-    margin: 5px 10px; /* Espaciado alrededor de las opciones */
-    width: calc(100% - 20px); /* Ancho total menos márgenes */
-    cursor: pointer;
-    border-radius: 5px; /* Bordes redondeados */
-    transition: background-color 0.3s ease; /* Transición suave */
-  }
-  
-  .sidebar-item.logout {
-    background-color: #ff4c4c; /* Color rojo para cerrar sesión */
-    color: white; /* Color de texto blanco para mejor contraste */
-    margin-top: auto; /* Separar la opción de cerrar sesión al final */
-  }
-  
-  .sidebar-item:hover {
-    background-color: #f0f0f0; /* Color de fondo al pasar el mouse */
-  }
-  
-  .sidebar-item.logout:hover {
-    background-color: #e03e3e; /* Color al pasar el mouse en cerrar sesión */
-  }
-  
-  .content {
-    flex-grow: 1; /* Ocupa el resto del espacio disponible */
-    padding: 20px; /* Espaciado interno */
-    display: flex;
-    align-items: center; /* Centrar verticalmente */
-    justify-content: center; /* Centrar horizontalmente */
-    color: white; /* Color de texto blanco */
-    font-size: 24px; /* Tamaño de fuente mayor */
-    text-align: center; /* Centrar el texto */
-    background: linear-gradient(135deg, #6A0DAD, #8A2BE2); /* Fondo de degradado */
-    margin-left: 200px; /* Asegurarse de que no se superponga con la barra lateral */
-  }
-  
-  /* Estilos para el cuadro de perfil */
-.profile-box {
-  background-color: rgba(255, 255, 255, 0.6); /* Fondo blanco con 50% de transparencia */
-  padding: 150px;
-  border-radius: 50px;
-  width: 700px;
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Estilos para la barra lateral */
+.sidebar {
+  width: 20%; /* Ancho relativo */
+  max-width: 250px; /* Máximo ancho para pantallas grandes */
+  min-width: 150px; /* Mínimo ancho para pantallas pequeñas */
+  background-color: #ffffff;
+  padding: 2rem 1rem; /* Espaciado interno */
   display: flex;
   flex-direction: column;
-  align-items: center;
+  position: fixed;
+  top: 60px; /* Ajustado para evitar superposición con Header */
+  left: 0;
+  height: calc(100% - 90px); /* Altura ajustada */
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  transition: width 0.3s ease; /* Transición suave al cambiar tamaño */
 }
 
-.profile-item {
-  margin-bottom: 20px;
+.sidebar-item {
+  background-color: #ffffff;
+  border: none;
+  padding: 0.8rem 1rem;
+  margin: 0.5rem 0;
   width: 100%;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  font-size: 1rem;
 }
 
+.sidebar-item:hover {
+  background-color: #f0f0f0;
+  transform: translateY(-2px); /* Elevación sutil al pasar el mouse */
+}
+
+.sidebar-item.logout {
+  background-color: #ff4c4c;
+  color: white;
+  margin-top: auto; /* Posicionar al final */
+}
+
+.sidebar-item.logout:hover {
+  background-color: #e03e3e;
+}
+
+/* Estilos para el contenido principal */
+.content {
+  flex: 1;
+  padding: 2rem;
+  margin-left: 250px; /* Ajustado al máximo ancho de la barra lateral */
+  overflow-y: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #6A0DAD, #8A2BE2);
+  transition: margin-left 0.3s ease;
+}
+
+/* Estilos para las cajas de información y perfil */
+.info-box, .profile-box {
+  background-color: rgba(255, 255, 255, 0.6);
+  padding: 2rem;
+  border-radius: 15px;
+  width: 60%; /* Ancho relativo */
+  max-width: 800px; /* Máximo ancho */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  text-align: left; /* Alinear texto a la izquierda */
+}
+
+/* Títulos */
+h2 {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.profile-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+/* Párrafos */
+p {
+  line-height: 1.6;
+  color: #666;
+  margin-bottom: 1.5rem;
+  text-align: justify; /* Texto justificado */
+}
+
+/* Campos de perfil */
 .profile-item h3 {
-  margin-bottom: 10px;
-  font-size: 18px;
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
   color: #333;
 }
 
 .profile-item input {
   width: 100%;
-  padding: 10px;
-  font-size: 16px;
+  padding: 0.8rem;
+  font-size: 1rem;
   border: 1px solid #ccc;
   border-radius: 5px;
   background-color: #f9f9f9;
   color: #333;
 }
 
-/* Título del perfil */
-.profile-title {
-  font-size: 50px; /* Tamaño grande */
-  font-weight: bold; /* Texto en negrita */
-  color: #333; /* Color de texto */
-  margin-bottom: 100px; /* Espaciado debajo del título */
-  text-align: center; /* Centrar el texto */
+/* Media Queries para pantallas más pequeñas */
+@media (max-width: 1200px) {
+  .sidebar {
+    width: 25%;
+    max-width: 200px;
+    min-width: 120px;
+    padding: 1.5rem 0.8rem;
+  }
+
+  .content {
+    margin-left: 200px;
+  }
+
+  .info-box, .profile-box {
+    width: 70%;
+  }
+
+  h2 {
+    font-size: 1.8rem;
+  }
+
+  .profile-title {
+    font-size: 2.2rem;
+  }
 }
 
-.info-box {
-  background-color: white; /* Fondo blanco para el contenido */
-  border-radius: 10px; /* Bordes redondeados */
-  padding: 20px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+@media (max-width: 992px) {
+  .sidebar {
+    width: 30%;
+    max-width: 180px;
+    min-width: 100px;
+    padding: 1rem 0.5rem;
+  }
+
+  .content {
+    margin-left: 180px;
+  }
+
+  .info-box, .profile-box {
+    width: 80%;
+  }
+
+  h2 {
+    font-size: 1.6rem;
+  }
+
+  .profile-title {
+    font-size: 2rem;
+  }
 }
 
-h2 {
-  font-size: 1.5em; /* Aumentar tamaño de los encabezados */
-  color: #333; /* Color de texto más oscuro */
-  margin-bottom: 15px; /* Espacio debajo del encabezado */
+@media (max-width: 768px) {
+  .home-container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    position: relative;
+    width: 100%;
+    height: auto;
+    top: 0;
+    left: 0;
+    box-shadow: none;
+  }
+
+  .content {
+    margin-left: 0;
+    padding: 1rem;
+  }
+
+  .info-box, .profile-box {
+    width: 100%;
+  }
+
+  h2 {
+    font-size: 1.4rem;
+  }
+
+  .profile-title {
+    font-size: 1.8rem;
+  }
 }
 
-p {
-  line-height: 1.6; /* Aumentar el interlineado para mejor legibilidad */
-  color: #666; /* Color de texto gris oscuro */
-  margin-bottom: 15px; /* Espacio debajo de los párrafos */
+@media (max-width: 480px) {
+  .sidebar-item {
+    font-size: 0.9rem;
+    padding: 0.6rem 0.8rem;
+  }
+
+  .info-box, .profile-box {
+    padding: 1.5rem;
+  }
+
+  h2 {
+    font-size: 1.2rem;
+  }
+
+  .profile-title {
+    font-size: 1.5rem;
+  }
 }

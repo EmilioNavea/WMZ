@@ -1,3 +1,4 @@
+// src/components/ForgotPassword.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../services/firebase';
@@ -27,9 +28,9 @@ const ForgotPassword = () => {
   return (
     <div className="App">
       <div className="container">
-        <div className="back-button" onClick={() => navigate("/")}>
+        <span className="switch-link" onClick={() => navigate("/")}>
           Volver
-        </div>
+        </span>
         <div className="title">Recuperar Contraseña</div>
         <form onSubmit={handlePasswordReset}>
           <input

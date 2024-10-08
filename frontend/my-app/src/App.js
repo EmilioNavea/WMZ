@@ -1,3 +1,4 @@
+// src/App.js
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/Login';
@@ -7,6 +8,7 @@ import ForgotPassword from './components/ForgotPassword';
 import Profile from './components/Profile'; // Importa el componente Profile
 import ImportantInfo from './components/ImportantInfo';
 import Header from './components/Header'; // Importa el Header
+import ProtectedRoute from './components/ProtectedRoute'; // Importa el componente ProtectedRoute
 import './App.css';
 
 const App = () => {
@@ -22,9 +24,9 @@ const App = () => {
         <Header /> {/* Agrega el componente Header aquí */}
         <Routes>
           <Route path="/" element={isLogin ? <Login onSwitch={toggleForm} /> : <Register onSwitch={toggleForm} />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/profile" element={<Profile />} /> {/* Nueva ruta para el perfil */}
-          <Route path="/important-info" element={<ImportantInfo />} />
+          <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} /> {/* Nueva ruta para el perfil */}
+          <Route path="/important-info" element={<ProtectedRoute><ImportantInfo /></ProtectedRoute>} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>

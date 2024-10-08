@@ -47,10 +47,13 @@ const Profile = () => {
     <div className="home-container">
       <div className="sidebar">
         <button className="sidebar-item">Consejos</button>
+        <button className="sidebar-item" onClick={() => navigate('/important-info')}>Información de Importancia</button>
         <button className="sidebar-item">Actividades</button>
-        <button className="sidebar-item" onClick={() => navigate('/important-info')}>Información de Importancia</button> {/* Redirección a Información de Importancia */}
         <button className="sidebar-item">Estado Trabajadores</button>
-        <button className="sidebar-item logout">Cerrar Sesión</button>
+        <button className="sidebar-item logout" onClick={() => {
+          auth.signOut();
+          navigate('/');
+        }}>Cerrar Sesión</button>
       </div>
       <div className="content">
         <div className="profile-box">

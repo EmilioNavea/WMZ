@@ -1,9 +1,10 @@
-// Login.js
+// src/components/Login.js
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { auth } from '../firebaseconfig'; // Asegúrate de que la ruta sea correcta
+import { auth } from '../services/firebase'; // Asegúrate de que la ruta sea correcta
 import { signInWithEmailAndPassword } from 'firebase/auth'; // Importa la función para autenticar
+import '../App.css';
 
 const Login = ({ onSwitch }) => {
   const [email, setEmail] = useState('');
