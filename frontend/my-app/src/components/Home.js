@@ -10,8 +10,7 @@ const Home = () => {
   // Función para manejar la redirección
   const handleNavigation = (path) => {
     if (path === 'logout') {
-      // Lógica para cerrar la sesión
-      auth.signOut();
+      auth.signOut(); // Cerrar sesión
       navigate('/'); // Redirige al login
     } else {
       navigate(`/${path}`); // Redirige a la ruta correspondiente
@@ -22,14 +21,13 @@ const Home = () => {
     <div className="home-container">
       <nav className="sidebar">
         <button onClick={() => handleNavigation('profile')} className="sidebar-item">Perfil</button>
-        <button onClick={() => handleNavigation('tips')} className="sidebar-item">Consejos</button>
-        <button onClick={() => handleNavigation('activities')} className="sidebar-item">Actividades</button>
+        <button onClick={() => handleNavigation('tips')} className="sidebar-item">Consejos</button> {/* Redirección a la pestaña de Consejos */}
+        <button onClick={() => handleNavigation('activities')} className="sidebar-item">Actividades</button> {/* Redirección a la pestaña de Actividades */}
         <button onClick={() => handleNavigation('important-info')} className="sidebar-item">Información de Importancia</button>
         <button onClick={() => handleNavigation('worker-status')} className="sidebar-item">Estado Trabajadores</button>
         <button onClick={() => handleNavigation('logout')} className="sidebar-item logout">Cerrar Sesión</button>
       </nav>
       <div className="content">
-        {/* Contenido principal de la página Home */}
         <h1>Bienvenido a WorkMind Zen</h1>
       </div>
     </div>

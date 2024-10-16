@@ -1,8 +1,8 @@
 // src/components/ImportantInfo.js
 import React from 'react';
-import { auth } from '../services/firebase';
 import { useNavigate } from 'react-router-dom'; // Importa el hook useNavigate
 import './Home.css'; // Estilos para la página de información
+import { auth } from '../services/firebase';
 
 const ImportantInfo = () => {
   const navigate = useNavigate(); // Inicializa useNavigate para manejar la navegación
@@ -10,10 +10,11 @@ const ImportantInfo = () => {
   return (
     <div className="home-container">
       <div className="sidebar">
-        <button className="sidebar-item" onClick={() => navigate('/profile')}>Perfil</button> {/* Redirige a la página de perfil */}
-        <button className="sidebar-item">Consejos</button>
-        <button className="sidebar-item">Actividades</button>
-        <button className="sidebar-item">Estado Trabajadores</button>
+        <button className="sidebar-item" onClick={() => navigate('/profile')}>Perfil</button>
+        <button className="sidebar-item" onClick={() => navigate('/tips')}>Consejos</button>
+        <button className="sidebar-item" onClick={() => navigate('/activities')}>Actividades</button>
+        <button className="sidebar-item" onClick={() => navigate('/important-info')}>Información de Importancia</button>
+        <button className="sidebar-item" onClick={() => navigate('/worker-status')}>Estado de Trabajadores</button>
         <button className="sidebar-item logout" onClick={() => {
           auth.signOut();
           navigate('/');

@@ -12,28 +12,18 @@ const Profile = () => {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      try {
-        const user = auth.currentUser; // Obtén el usuario autenticado
-        if (user) {
-          const userRef = doc(db, 'users', user.uid); // Referencia al documento del usuario en Firestore
-          const userSnap = await getDoc(userRef); // Obtén los datos del documento
+      const user = auth.currentUser;
+      if (user) {
+        const userRef = doc(db, 'users', user.uid);
+        const userSnap = await getDoc(userRef);
 
-          if (userSnap.exists()) {
-            setUserData({
-              name: userSnap.data().name,
-              email: userSnap.data().email
-            });
-          } else {
-            console.log('No se encontró el documento del usuario.');
-          }
+        if (userSnap.exists()) {
+          setUserData({ name: userSnap.data().name, email: userSnap.data().email });
         } else {
-          console.log('No hay un usuario autenticado.');
+          console.log('No se encontró el documento del usuario.');
         }
-      } catch (error) {
-        console.error('Error al obtener los datos del usuario:', error);
-      } finally {
-        setLoading(false); // Termina el estado de carga
       }
+      setLoading(false);
     };
 
     fetchUserData();
@@ -46,10 +36,11 @@ const Profile = () => {
   return (
     <div className="home-container">
       <div className="sidebar">
-        <button className="sidebar-item">Consejos</button>
+        <button className="sidebar-item" onClick={() => navigate('/profile')}>Perfil</button>
+        <button className="sidebar-item" onClick={() => navigate('/tips')}>Consejos</button>
+        <button className="sidebar-item" onClick={() => navigate('/activities')}>Actividades</button>
         <button className="sidebar-item" onClick={() => navigate('/important-info')}>Información de Importancia</button>
-        <button className="sidebar-item">Actividades</button>
-        <button className="sidebar-item">Estado Trabajadores</button>
+        <button className="sidebar-item" onClick={() => navigate('/worker-status')}>Estado de Trabajadores</button>
         <button className="sidebar-item logout" onClick={() => {
           auth.signOut();
           navigate('/');
