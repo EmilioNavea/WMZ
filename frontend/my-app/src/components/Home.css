@@ -11,20 +11,21 @@
 
 /* Estilos para la barra lateral */
 .sidebar {
-  width: 20%; /* Ancho relativo */
-  max-width: 250px; /* Máximo ancho para pantallas grandes */
-  min-width: 150px; /* Mínimo ancho para pantallas pequeñas */
+  width: 20%; 
+  max-width: 250px;
+  min-width: 150px;
   background-color: #ffffff;
-  padding: 2rem 1rem; /* Espaciado interno */
+  padding: 2rem 1rem;
   display: flex;
   flex-direction: column;
   position: fixed;
-  top: 60px; /* Ajustado para evitar superposición con Header */
+  top: 60px;
   left: 0;
-  height: calc(100% - 90px); /* Altura ajustada */
+  height: calc(100% - 60px);
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
   z-index: 1000;
-  transition: width 0.3s ease; /* Transición suave al cambiar tamaño */
+  transition: width 0.3s ease;
+  justify-content: space-between; /* Distribuir los items entre la parte superior e inferior */
 }
 
 .sidebar-item {
@@ -41,13 +42,13 @@
 
 .sidebar-item:hover {
   background-color: #f0f0f0;
-  transform: translateY(-2px); /* Elevación sutil al pasar el mouse */
+  transform: translateY(-2px);
 }
 
 .sidebar-item.logout {
   background-color: #ff4c4c;
   color: white;
-  margin-top: auto; /* Posicionar al final */
+  margin-bottom: 3rem; /* Agrega espacio antes del final de la barra */
 }
 
 .sidebar-item.logout:hover {
@@ -58,7 +59,7 @@
 .content {
   flex: 1;
   padding: 2rem;
-  margin-left: 250px; /* Ajustado al máximo ancho de la barra lateral */
+  margin-left: 250px;
   overflow-y: auto;
   display: flex;
   align-items: center;
@@ -70,9 +71,9 @@
 /* Estilos para las cajas de información y perfil */
 .info-box, .profile-box {
   background-color: rgba(255, 255, 255, 0.6);
-  padding: 2rem;
-  border-radius: 15px;
-  width: 60%; /* Ancho relativo */
+  padding: 5rem;
+  border-radius: 50px;
+  width: 100%; /* Ancho relativo */
   max-width: 800px; /* Máximo ancho */
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   text-align: left; /* Alinear texto a la izquierda */

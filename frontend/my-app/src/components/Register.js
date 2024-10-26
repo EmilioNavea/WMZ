@@ -1,9 +1,24 @@
 // src/components/Register.js
 import React, { useState } from 'react';
-import { auth, db } from '../services/firebase';
+import { auth, db } from '../services/firebase'; // Asegúrate de importar `db`
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc } from "firebase/firestore"; // Importar `getDoc`
 import '../App.css';
+
+const createInitialViewData = async (userId) => {
+  const tipsDoc = doc(db, 'users', userId, 'viewData', 'tips');
+  const activitiesDoc = doc(db, 'users', userId, 'viewData', 'activities');
+
+  const tipsSnapshot = await getDoc(tipsDoc);
+  if (!tipsSnapshot.exists()) {
+    await setDoc(tipsDoc, { lastViewed: "", secondAvailableDate: "" });
+  }
+
+  const activitiesSnapshot = await getDoc(activitiesDoc);
+  if (!activitiesSnapshot.exists()) {
+    await setDoc(activitiesDoc, { lastViewed: "", secondAvailableDate: "" });
+  }
+};
 
 const Register = ({ onSwitch }) => {
   const [email, setEmail] = useState('');
@@ -19,12 +34,16 @@ const Register = ({ onSwitch }) => {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
+      // Crea el documento del usuario
       await setDoc(doc(db, 'users', user.uid), {
         email: email,
         name: name,
         registrationDate: new Date(),
         active: true,
       });
+
+      // Crea los datos iniciales en viewData
+      await createInitialViewData(user.uid);
 
       alert("Usuario registrado correctamente");
       onSwitch(); // Redirige al formulario de inicio de sesión

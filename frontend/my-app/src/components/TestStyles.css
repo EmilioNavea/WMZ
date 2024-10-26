@@ -1,14 +1,32 @@
 /* src/components/TestStyles.css */
 
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; /* Evita el desplazamiento horizontal */
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    background-color: #6A0DAD;
+    font-family: Arial, sans-serif;
+    height: 100vh; /* Mantiene el cuerpo al 100% de la altura de la ventana */
+    overflow-y: auto; /* Permite desplazamiento vertical si el contenido es más largo */
+}
+
 .test-form {
     background-color: #f9f9f9;
     padding: 2rem;
     border-radius: 15px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     max-width: 600px;
-    margin: 6rem auto; /* Aumenta el margen superior para que el formulario baje */
-    position: relative;
-    top: 350px; /* Opción alternativa: desplaza el formulario hacia abajo */
+    width: 100%;
+    margin: 2rem 1rem; /* Ajusta los márgenes para darle espacio en todas las pantallas */
+    overflow-y: auto; /* Permite desplazamiento interno si el contenido es largo */
+    max-height: 90vh; /* Asegura que el formulario no ocupe más del 90% de la pantalla */
 }
 
 .test-title {
@@ -32,7 +50,7 @@
 
 .test-question {
     margin-bottom: 1.5rem;
-    text-align: justify;
+    text-align: left;
 }
 
 .question-label {
@@ -89,14 +107,15 @@
     font-size: 1.1rem;
     color: #555;
     margin-bottom: 2rem;
-    text-align: justify; /* Cambiado de center a justify */
+    text-align: justify;
     line-height: 1.5;
-  }
-  
+}
 
 /* Media Queries for responsiveness */
 @media (max-width: 768px) {
     .test-form {
-        margin: 8rem auto; /* Ajuste adicional para pantallas más pequeñas */
+        margin: 8rem auto;
+        max-height: none; /* Elimina la limitación de altura para pantallas pequeñas */
+        height: auto; /* Ajusta la altura en pantallas más pequeñas */
     }
 }

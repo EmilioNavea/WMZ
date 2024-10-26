@@ -1,10 +1,25 @@
 // src/components/Login.js
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { auth } from '../services/firebase'; // Asegúrate de que la ruta sea correcta
-import { signInWithEmailAndPassword } from 'firebase/auth'; // Importa la función para autenticar
+import { auth, db } from '../services/firebase'; // Asegúrate de importar `db`
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { doc, getDoc, setDoc } from "firebase/firestore"; // Importar `getDoc` y `setDoc`
 import '../App.css';
+
+const createInitialViewData = async (userId) => {
+  const tipsDoc = doc(db, 'users', userId, 'viewData', 'tips');
+  const activitiesDoc = doc(db, 'users', userId, 'viewData', 'activities');
+
+  const tipsSnapshot = await getDoc(tipsDoc);
+  if (!tipsSnapshot.exists()) {
+    await setDoc(tipsDoc, { lastViewed: "", secondAvailableDate: "" });
+  }
+
+  const activitiesSnapshot = await getDoc(activitiesDoc);
+  if (!activitiesSnapshot.exists()) {
+    await setDoc(activitiesDoc, { lastViewed: "", secondAvailableDate: "" });
+  }
+};
 
 const Login = ({ onSwitch }) => {
   const [email, setEmail] = useState('');
@@ -21,28 +36,15 @@ const Login = ({ onSwitch }) => {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // Obtiene el token JWT
-      const idToken = await user.getIdToken();
+      // Crea los datos iniciales si no existen
+      await createInitialViewData(user.uid);
 
-      // Envía el token al backend
-      const response = await axios.post('http://127.0.0.1:5000/login', {
-        token: idToken,
-      });
-
-      if (response.data.success) {
-        alert("Inicio de sesión exitoso");
-        navigate("/home");
-      } else {
-        setError("Credenciales incorrectas");
-      }
+      alert("Inicio de sesión exitoso");
+      navigate("/home");
     } catch (error) {
       console.error("Error al iniciar sesión: ", error);
       setError("Error al iniciar sesión: " + (error.response?.data?.error || "Ocurrió un error inesperado."));
     }
-  };
-
-  const handleForgotPassword = () => {
-    navigate("/forgot-password");
   };
 
   return (
@@ -71,7 +73,7 @@ const Login = ({ onSwitch }) => {
           <span onClick={onSwitch} className="switch-link">Regístrate</span>
         </p>
         <p>
-          <span onClick={handleForgotPassword} className="switch-link">¿Has olvidado tu contraseña?</span>
+          <span onClick={() => navigate("/forgot-password")} className="switch-link">¿Has olvidado tu contraseña?</span>
         </p>
         {error && <p className="error">{error}</p>}
       </div>

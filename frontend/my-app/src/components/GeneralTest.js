@@ -1,33 +1,20 @@
+// src/components/GeneralTest.js
 import React, { useState, useEffect } from 'react';
 import { auth, db } from '../services/firebase';
-import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
-import './TestStyles.css'; // Asegúrate de importar el archivo CSS con los estilos
+import { doc, setDoc, Timestamp } from 'firebase/firestore';
+import './TestStyles.css';
 
 const GeneralTest = ({ onComplete }) => {
-  const [answers, setAnswers] = useState(Array(10).fill(3)); // Valor inicial 3 (promedio)
+  const [answers, setAnswers] = useState(Array(10).fill(3)); // Valor inicial en el centro (3)
   const [loading, setLoading] = useState(true);
 
-  // Verifica si el usuario ya ha completado el test esta semana
   useEffect(() => {
-    const checkTestCompletion = async () => {
-      const user = auth.currentUser;
-      if (user) {
-        const testDoc = doc(db, 'tests', user.uid);
-        const testSnapshot = await getDoc(testDoc);
-        if (testSnapshot.exists()) {
-          const lastCompleted = testSnapshot.data().weekCompleted?.toDate();
-          if (lastCompleted && new Date().getWeek() === new Date(lastCompleted).getWeek()) {
-            onComplete();
-          } else {
-            setLoading(false);
-          }
-        } else {
-          setLoading(false);
-        }
-      }
-    };
-    checkTestCompletion();
-  }, [onComplete]);
+    const user = auth.currentUser;
+    if (user) {
+      // Simula una carga inicial si es necesario
+      setLoading(false);
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,8 +26,9 @@ const GeneralTest = ({ onComplete }) => {
       await setDoc(testRef, {
         weeklyTestResults: totalScore,
         weekCompleted: Timestamp.now(),
-      });
-      onComplete(totalScore);
+      }, { merge: true });
+
+      onComplete(totalScore);  // Notifica al padre el resultado del test
     }
   };
 
@@ -56,25 +44,23 @@ const GeneralTest = ({ onComplete }) => {
     <form onSubmit={handleSubmit} className="test-form">
       <h2 className="test-title">Test de Bienestar Semanal</h2>
       <p className="test-instructions">
-        Este test va a evaluar tu bienestar general mediante preguntas que cubrirán diferentes aspectos de la salud mental. 
+        Este test evaluará tu bienestar general mediante preguntas que cubrirán diferentes aspectos de la salud mental. 
         Para cada pregunta, deberás responder en una escala de 1 a 5 (donde 1 es "muy en desacuerdo" y 5 es "muy de acuerdo").
       </p>
-      {[ // Array de preguntas
-        "Me siento capaz de manejar mis responsabilidades diarias sin sentirme abrumado.",
-        "En general, me sentido tranquilo y en control de mis emociones.",
-        "He podido dormir bien y me siento descansado al despertar.",
-        "Tengo energía suficiente para enfrentar el día.",
-        "He disfrutado de las actividades diarias y no siento una gran falta de interés.",
-        "Siento que puedo manejar situaciones estresantes sin demasiada dificultad.",
-        "Me siento satisfecho con mis relaciones personales y sociales.",
-        "No me siento excesivamente preocupado por el futuro o por eventos próximos.",
-        "Siento que mi bienestar general es estable y no está deteriorándose.",
-        "En la última semana, he tenido momentos de alegría o satisfacción personal."
+      {[
+        "PREGUNTA 1: Me siento capaz de manejar mis responsabilidades.",
+        "PREGUNTA 2: Me siento emocionalmente tranquilo.",
+        "PREGUNTA 3: He dormido bien.",
+        "PREGUNTA 4: Tengo energía para enfrentar el día.",
+        "PREGUNTA 5: Disfruto de mis actividades diarias.",
+        "PREGUNTA 6: Puedo manejar situaciones estresantes.",
+        "PREGUNTA 7: Estoy satisfecho con mis relaciones personales.",
+        "PREGUNTA 8: No me preocupo excesivamente por el futuro.",
+        "PREGUNTA 9: Mi bienestar general es estable.",
+        "PREGUNTA 10: He tenido momentos de alegría o satisfacción personal."
       ].map((question, index) => (
         <div key={index} className="test-question">
-          <label className="question-label">
-            Pregunta {index + 1}: {question}
-          </label>
+          <label>{question}</label>
           <input
             type="range"
             min="1"
