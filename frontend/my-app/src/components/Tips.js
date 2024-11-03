@@ -7,41 +7,39 @@ import CategorizationTest from './CategorizationTest';
 import { useNavigate } from 'react-router-dom';
 import './ActTips.css';
 
+function getRandomElements(arr, num) {
+  return arr.sort(() => 0.5 - Math.random()).slice(0, num);
+}
+
 const Tips = () => {
   const [tips, setTips] = useState([]);
   const [testCompleted, setTestCompleted] = useState(false);
+  const [generalTestNeeded, setGeneralTestNeeded] = useState(true);
   const [categorizationNeeded, setCategorizationNeeded] = useState(false);
   const [problemCategory, setProblemCategory] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const checkTestCompletion = async () => {
+    const checkTestStatus = async () => {
       const user = auth.currentUser;
       if (user) {
-        const testDoc = doc(db, 'tests', user.uid);
-        const testSnapshot = await getDoc(testDoc);
-        
-        if (testSnapshot.exists()) {
-          const lastCompleted = testSnapshot.data().weekCompleted?.toDate();
-          const score = testSnapshot.data().weeklyTestResults;
-          const currentWeek = new Date();
-          const timeDifference = (currentWeek - lastCompleted) / (1000 * 3600 * 24 * 7);
+        const progressRef = doc(db, 'users', user.uid, 'progress', 'lastGeneral');
+        const progressSnap = await getDoc(progressRef);
 
-          if (lastCompleted && timeDifference < 1) {
-            if (score <= 40) {
-              setCategorizationNeeded(true);
-            } else {
-              setTestCompleted(true);
-            }
-          } else {
-            setCategorizationNeeded(true);
-          }
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+        if (progressSnap.exists() && progressSnap.data().lastGeneralCompleted?.toDate() > oneWeekAgo) {
+          const progressData = await getDoc(doc(db, 'users', user.uid, 'progress', 'lastCategorization'));
+          setProblemCategory(progressData.data().problemCategory);
+          setTestCompleted(true);
+          setGeneralTestNeeded(false);
         } else {
-          setTestCompleted(false);
+          setGeneralTestNeeded(true);
         }
       }
     };
-    checkTestCompletion();
+    checkTestStatus();
   }, []);
 
   useEffect(() => {
@@ -56,21 +54,22 @@ const Tips = () => {
           fetchedTips.push(...doc.data().consejos);
         });
 
-        setTips(fetchedTips.slice(0, 2));
+        setTips(getRandomElements(fetchedTips, 2));
       }
     };
 
     fetchTips();
   }, [testCompleted, problemCategory]);
 
-  if (!testCompleted && !categorizationNeeded) {
+  if (generalTestNeeded) {
     return (
       <GeneralTest
         onComplete={(score) => {
-          if (score <= 40) {
+          setGeneralTestNeeded(false);
+          if (score === 'Baja' || score === 'Moderada') {
             setCategorizationNeeded(true);
           } else {
-            setTestCompleted(true);
+            setCategorizationNeeded(true);
           }
         }}
       />

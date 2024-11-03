@@ -1,75 +1,45 @@
 // src/components/Activities.js
 import React, { useState, useEffect } from 'react';
 import { db, auth } from '../services/firebase';
-import { collection, query, where, getDocs, doc, getDoc, setDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 import GeneralTest from './GeneralTest';
 import CategorizationTest from './CategorizationTest';
 import { useNavigate } from 'react-router-dom';
-import './ActTips.css'; // Reutiliza el estilo de Home para la barra lateral
+import './ActTips.css';
 
-function getTodayDate() {
-  const today = new Date();
-  return today.toISOString().split('T')[0];
-}
-
-function addDays(date, days) {
-  const result = new Date(date);
-  result.setDate(result.getDate() + days);
-  return result.toISOString().split('T')[0];
+function getRandomElements(arr, num) {
+  return arr.sort(() => 0.5 - Math.random()).slice(0, num);
 }
 
 const Activities = () => {
   const [activities, setActivities] = useState([]);
-  const [showFirstActivities, setShowFirstActivities] = useState(false);
-  const [showSecondActivities, setShowSecondActivities] = useState(false);
-  const [daysPassed, setDaysPassed] = useState(false);
   const [testCompleted, setTestCompleted] = useState(false);
+  const [generalTestNeeded, setGeneralTestNeeded] = useState(true);
   const [categorizationNeeded, setCategorizationNeeded] = useState(false);
   const [problemCategory, setProblemCategory] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const checkTestCompletion = async () => {
+    const checkTestStatus = async () => {
       const user = auth.currentUser;
       if (user) {
-        try {
-          const testDoc = doc(db, 'tests', user.uid);
-          const testSnapshot = await getDoc(testDoc);
+        const progressRef = doc(db, 'users', user.uid, 'progress', 'lastGeneral');
+        const progressSnap = await getDoc(progressRef);
 
-          if (testSnapshot.exists()) {
-            const lastCompleted = testSnapshot.data().weekCompleted?.toDate();
-            const generalTestScore = testSnapshot.data().weeklyTestResults;
-            const currentWeek = new Date();
-            const timeDifference = (currentWeek - lastCompleted) / (1000 * 3600 * 24 * 7); // Diferencia en semanas
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
-            if (lastCompleted && timeDifference < 1) {
-              if (generalTestScore <= 40) {
-                setCategorizationNeeded(true);
-              } else {
-                setTestCompleted(true);
-              }
-            } else {
-              setCategorizationNeeded(true); // Permitir realizar el test si pasó más de una semana
-            }
-          } else {
-            setTestCompleted(false); // Mostrar test si no hay registro
-          }
-
-          const activitiesDoc = doc(db, 'users', user.uid, 'viewData', 'activities');
-          const activitiesSnapshot = await getDoc(activitiesDoc);
-          if (activitiesSnapshot.exists()) {
-            const viewData = activitiesSnapshot.data();
-            if (viewData.secondAvailableDate && getTodayDate() >= viewData.secondAvailableDate) {
-              setDaysPassed(true);
-            }
-            setShowFirstActivities(true);
-          }
-        } catch (error) {
-          console.error('Error al verificar el test:', error);
+        if (progressSnap.exists() && progressSnap.data().lastGeneralCompleted?.toDate() > oneWeekAgo) {
+          const progressData = await getDoc(doc(db, 'users', user.uid, 'progress', 'lastCategorization'));
+          setProblemCategory(progressData.data().problemCategory);
+          setTestCompleted(true);
+          setGeneralTestNeeded(false);
+        } else {
+          setGeneralTestNeeded(true);
         }
       }
     };
-    checkTestCompletion();
+    checkTestStatus();
   }, []);
 
   useEffect(() => {
@@ -84,40 +54,37 @@ const Activities = () => {
           fetchedActivities.push(...doc.data().actividades);
         });
 
-        setActivities(fetchedActivities.slice(0, 4)); // Mostrar solo 4 actividades
+        setActivities(getRandomElements(fetchedActivities, 2));
       }
     };
 
     fetchActivities();
   }, [testCompleted, problemCategory]);
 
-  const handleShowFirstActivities = async () => {
-    const user = auth.currentUser;
-    if (user) {
-      const activitiesDoc = doc(db, 'users', user.uid, 'viewData', 'activities');
-      await setDoc(activitiesDoc, {
-        lastViewed: getTodayDate(),
-        secondAvailableDate: addDays(getTodayDate(), 2),
-      });
-      setShowFirstActivities(true);
-    }
-  };
-
-  if (!testCompleted && !categorizationNeeded) {
-    return <GeneralTest onComplete={(score) => {
-      if (score <= 40) {
-        setCategorizationNeeded(true);
-      } else {
-        setTestCompleted(true);
-      }
-    }} />;
+  if (generalTestNeeded) {
+    return (
+      <GeneralTest
+        onComplete={(score) => {
+          setGeneralTestNeeded(false);
+          if (score === 'Baja' || score === 'Moderada') {
+            setCategorizationNeeded(true);
+          } else {
+            setCategorizationNeeded(true);
+          }
+        }}
+      />
+    );
   }
 
   if (categorizationNeeded && !testCompleted) {
-    return <CategorizationTest onComplete={(category) => {
-      setProblemCategory(category);
-      setTestCompleted(true);
-    }} />;
+    return (
+      <CategorizationTest
+        onComplete={(category) => {
+          setProblemCategory(category);
+          setTestCompleted(true);
+        }}
+      />
+    );
   }
 
   return (
@@ -133,15 +100,7 @@ const Activities = () => {
         <div className="content-box2">
           <h2>Actividades Semanales</h2>
           <ul className="activity-list">
-            {showFirstActivities && activities.slice(0, 2).map((activity, index) => (
-              <li key={index}>{activity}</li>
-            ))}
-          </ul>
-          {showFirstActivities && daysPassed && !showSecondActivities && (
-            <button className="view-more-btn" onClick={() => setShowSecondActivities(true)}>Ver más actividades</button>
-          )}
-          <ul className="activity-list">
-            {showSecondActivities && activities.slice(2, 4).map((activity, index) => (
+            {activities.map((activity, index) => (
               <li key={index}>{activity}</li>
             ))}
           </ul>

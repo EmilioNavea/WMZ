@@ -1,14 +1,16 @@
 // src/components/Profile.js
 import React, { useEffect, useState } from 'react';
 import { auth, db } from '../services/firebase';
-import { doc, getDoc } from 'firebase/firestore';
-import { useNavigate } from 'react-router-dom'; // Importa useNavigate
-import './Home.css';
+import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
+import './Profile.css';
 
 const Profile = () => {
   const [userData, setUserData] = useState({ name: '', email: '' });
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate(); // Inicializa useNavigate para manejar la navegación
+  const [progressData, setProgressData] = useState({ tests: [], categories: [] });
+  const [showProgress, setShowProgress] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -28,6 +30,39 @@ const Profile = () => {
 
     fetchUserData();
   }, []);
+
+  const fetchProgressData = async () => {
+    const user = auth.currentUser;
+    if (user) {
+      const testsCollection = collection(db, 'users', user.uid, 'tests');
+      const testSnapshots = await getDocs(testsCollection);
+
+      const testResults = [];
+      const categoryResults = [];
+      testSnapshots.forEach((testDoc) => {
+        const data = testDoc.data();
+        if (data.weekCompleted && data.weeklyTestResults) {
+          testResults.push({
+            date: data.weekCompleted.toDate().toLocaleDateString(),
+            testScore: data.weeklyTestResults,
+          });
+        }
+        if (data.weeklyTestResults2) {
+          categoryResults.push({
+            category: data.weeklyTestResults2,
+          });
+        }
+      });
+
+      setProgressData({ tests: testResults, categories: categoryResults });
+      setShowProgress(true);
+    }
+  };
+
+  const handleShowProgress = async () => {
+    await fetchProgressData();
+    setShowProgress(!showProgress);
+  };
 
   if (loading) {
     return <div className="profile-title">Cargando perfil...</div>;
@@ -57,6 +92,30 @@ const Profile = () => {
             <h3>Correo</h3>
             <input type="text" value={userData.email} readOnly />
           </div>
+          <button className="view-more-btn" onClick={handleShowProgress}>
+            {showProgress ? 'Ocultar Progreso' : 'Ver Mi Progreso'}
+          </button>
+          {showProgress && (
+            <div className="progress-box">
+              <h2>Progreso Semanal</h2>
+              <ul>
+                {progressData.tests.length > 0 && progressData.tests.map((entry, index) => (
+                  <li key={index}>
+                    <strong>Fecha:</strong> {entry.date}<br />
+                    <strong>Resultado:</strong> {entry.testScore}
+                  </li>
+                ))}
+                {progressData.categories.length > 0 && progressData.categories.map((entry, index) => (
+                  <li key={index}>
+                    <strong>Categoría:</strong> {entry.category}
+                  </li>
+                ))}
+                {progressData.tests.length === 0 && progressData.categories.length === 0 && (
+                  <p>No hay datos de progreso para mostrar.</p>
+                )}
+              </ul>
+            </div>
+          )}
         </div>
       </div>
     </div>

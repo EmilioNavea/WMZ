@@ -1,34 +1,67 @@
 // src/components/GeneralTest.js
 import React, { useState, useEffect } from 'react';
 import { auth, db } from '../services/firebase';
-import { doc, setDoc, Timestamp } from 'firebase/firestore';
+import { doc, collection, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import './TestStyles.css';
 
 const GeneralTest = ({ onComplete }) => {
-  const [answers, setAnswers] = useState(Array(10).fill(3)); // Valor inicial en el centro (3)
+  const [answers, setAnswers] = useState(Array(10).fill(3));
   const [loading, setLoading] = useState(true);
+  const [shouldShowTest, setShouldShowTest] = useState(false);
 
   useEffect(() => {
-    const user = auth.currentUser;
-    if (user) {
-      // Simula una carga inicial si es necesario
+    const checkLastGeneralTest = async () => {
+      const user = auth.currentUser;
+      if (user) {
+        const progressRef = doc(db, 'users', user.uid, 'progress', 'lastGeneral');
+        const progressSnap = await getDoc(progressRef);
+
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+        if (progressSnap.exists() && progressSnap.data().lastGeneralCompleted?.toDate() > oneWeekAgo) {
+          setShouldShowTest(false);
+        } else {
+          setShouldShowTest(true);
+        }
+      }
       setLoading(false);
-    }
+    };
+
+    checkLastGeneralTest();
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const totalScore = answers.reduce((acc, score) => acc + score, 0);
-    const user = auth.currentUser;
+    let result;
 
+    if (totalScore > 30) {
+      result = 'Buena';
+    } else if (totalScore >= 18) {
+      result = 'Moderada';
+    } else {
+      result = 'Baja';
+    }
+
+    const user = auth.currentUser;
     if (user) {
-      const testRef = doc(db, 'tests', user.uid);
+      const testRef = doc(collection(db, 'users', user.uid, 'tests'), Timestamp.now().toMillis().toString());
+      const progressRef = doc(db, 'users', user.uid, 'progress', 'lastGeneral');
+
       await setDoc(testRef, {
-        weeklyTestResults: totalScore,
+        weeklyTestResults: result,
         weekCompleted: Timestamp.now(),
       }, { merge: true });
 
-      onComplete(totalScore);  // Notifica al padre el resultado del test
+      await setDoc(progressRef, {
+        lastGeneralCompleted: Timestamp.now(),
+      }, { merge: true });
+
+      if (result === 'Buena') {
+        alert('Genial, esta semana mantienes una buena salud mental, pero siempre vienen bien unos consejos y actividades para mantenerla.');
+      }
+      onComplete(result);
     }
   };
 
@@ -38,13 +71,19 @@ const GeneralTest = ({ onComplete }) => {
     setAnswers(newAnswers);
   };
 
-  return loading ? (
-    <div>Cargando...</div>
-  ) : (
+  if (loading) {
+    return <div>Cargando...</div>;
+  }
+
+  if (!shouldShowTest) {
+    return <div>Ya realizaste el test esta semana. Vuelve la próxima semana para evaluar tu salud mental nuevamente.</div>;
+  }
+
+  return (
     <form onSubmit={handleSubmit} className="test-form">
       <h2 className="test-title">Test de Bienestar Semanal</h2>
       <p className="test-instructions">
-        Este test evaluará tu bienestar general mediante preguntas que cubrirán diferentes aspectos de la salud mental. 
+        Este test evaluará tu bienestar general mediante preguntas que cubrirán diferentes aspectos de la salud mental.
         Para cada pregunta, deberás responder en una escala de 1 a 5 (donde 1 es "muy en desacuerdo" y 5 es "muy de acuerdo").
       </p>
       {[

@@ -1,9 +1,8 @@
 // src/components/CategorizationTest.js
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { auth, db } from '../services/firebase';
-import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
-import './TestStyles.css'; // Reutilizamos los mismos estilos que en GeneralTest
+import { doc, getDoc, setDoc, Timestamp, collection } from 'firebase/firestore';
+import './TestStyles.css';
 
 const questions = {
   Estrés: [
@@ -76,40 +75,27 @@ const questions = {
 const CategorizationTest = ({ onComplete }) => {
   const [answers, setAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
-    const checkCategorizationTestCompletion = async () => {
+    const checkLastCategorizationDate = async () => {
       const user = auth.currentUser;
       if (user) {
-        const testDoc = doc(db, 'tests', user.uid);
-        const testSnapshot = await getDoc(testDoc);
+        const progressRef = doc(db, 'users', user.uid, 'progress', 'lastCategorization');
+        const progressSnap = await getDoc(progressRef);
 
-        if (testSnapshot.exists()) {
-          const lastCategorizationCompleted = testSnapshot.data().categorizationCompleted?.toDate();
-          const currentWeek = new Date();
-          const timeDifference = (currentWeek - lastCategorizationCompleted) / (1000 * 3600 * 24 * 7); // Diferencia en semanas
-
-          // Si el test de categorización fue completado en la semana actual, no lo mostramos
-          if (lastCategorizationCompleted && timeDifference < 1) {
-            onComplete(testSnapshot.data().problemCategory); // Usa la categoría ya guardada
-          } else {
-            setLoading(false); // Permite hacer el test si no se ha realizado esta semana
-          }
-        } else {
-          setLoading(false); // Si no existe el test, permitimos que se haga
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+        if (progressSnap.exists() && progressSnap.data().lastCategorizationCompleted?.toDate() > oneWeekAgo) {
+          onComplete(null);
         }
       }
     };
-    checkCategorizationTestCompletion();
+    checkLastCategorizationDate();
   }, [onComplete]);
 
   const handleAnswerChange = (category, index, value) => {
     const newAnswers = { ...answers };
-    if (!newAnswers[category]) {
-      newAnswers[category] = Array(questions[category].length).fill(0);
-    }
+    newAnswers[category] = newAnswers[category] || Array(questions[category].length).fill(0);
     newAnswers[category][index] = parseInt(value);
     setAnswers(newAnswers);
   };
@@ -118,43 +104,37 @@ const CategorizationTest = ({ onComplete }) => {
     e.preventDefault();
     setSubmitted(true);
 
-    // Procesar los resultados para identificar la categoría más problemática
-    const categoryScores = Object.keys(answers).map((category) => {
-      const totalScore = answers[category].reduce((acc, val) => acc + val, 0);
-      return { category, score: totalScore };
+    const categoryScores = {};
+    Object.keys(answers).forEach(category => {
+      categoryScores[category] = answers[category]?.reduce((acc, val) => acc + val, 0) || 0;
     });
-
-    categoryScores.sort((a, b) => b.score - a.score);
-
-    const mostProblematicCategory = categoryScores.length > 0 ? categoryScores[0].category : null;
-    alert(`La categoría más problemática es: ${mostProblematicCategory}`);
+    
+    const mostProblematicCategory = Object.entries(categoryScores).reduce((max, current) => {
+      return current[1] > max[1] ? current : max;
+    }, ['', -Infinity])[0];
 
     const user = auth.currentUser;
     if (user) {
-      const testRef = doc(db, 'tests', user.uid);
-      await setDoc(testRef, {
+      const progressRef = doc(db, 'users', user.uid, 'progress', 'lastCategorization');
+      const testRef = doc(collection(db, 'users', user.uid, 'tests'), Timestamp.now().toMillis().toString());
+
+      await setDoc(progressRef, {
         problemCategory: mostProblematicCategory,
-        categorizationCompleted: Timestamp.now(), // Marca de tiempo de cuándo se completó el test
+        lastCategorizationCompleted: Timestamp.now(),
       }, { merge: true });
 
-      onComplete(mostProblematicCategory);  // Notifica al componente padre con la categoría
+      await setDoc(testRef, { weeklyTestResults2: mostProblematicCategory }, { merge: true });
+
+      onComplete(mostProblematicCategory);
     }
   };
-
-  if (loading) {
-    return <div>Cargando...</div>;
-  }
 
   return (
     <form onSubmit={handleSubmit} className="test-form">
       <h2 className="test-title">Test de Categorización</h2>
-      <p className="test-instructions">
-        Este test evaluará la categoría en que presentas más dificultades mediante preguntas que cubrirán diferentes aspectos de la salud mental. 
-        Para cada pregunta, deberás responder en una escala de 1 a 5 (donde 1 es "muy en desacuerdo" y 5 es "muy de acuerdo").
-      </p>
       {!submitted ? (
         <>
-          {Object.keys(questions).map((category) => (
+          {Object.keys(questions).map(category => (
             <div key={category} className="test-category">
               <h3 className="category-title">{category}</h3>
               {questions[category].map((q, index) => (
@@ -167,13 +147,6 @@ const CategorizationTest = ({ onComplete }) => {
                     onChange={(e) => handleAnswerChange(category, index, e.target.value)}
                     className="range-slider"
                   />
-                  <div className="range-values">
-                    <span>1</span>
-                    <span>2</span>
-                    <span>3</span>
-                    <span>4</span>
-                    <span>5</span>
-                  </div>
                 </div>
               ))}
             </div>
