@@ -1,0 +1,184 @@
+/* Estilos para el contenedor general */
+.home-container {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+}
+
+/* Estilos para la barra lateral */
+.sidebar {
+    width: 20%; /* Ancho relativo */
+    max-width: 250px; /* Máximo ancho para pantallas grandes */
+    min-width: 150px; /* Mínimo ancho para pantallas pequeñas */
+    background-color: #ffffff;
+    padding: 2rem 1rem; /* Espaciado interno */
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 60px; /* Ajustado para evitar superposición con Header */
+    left: 0;
+    height: calc(100% - 90px); /* Altura ajustada */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    transition: width 0.3s ease; /* Transición suave al cambiar tamaño */
+}
+
+.sidebar-item {
+    background-color: #ffffff;
+    border: none;
+    padding: 0.8rem 1rem;
+    margin: 0.5rem 0;
+    width: 100%;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-size: 1rem;
+}
+
+.sidebar-item:hover {
+    background-color: #f0f0f0;
+    transform: translateY(-2px); /* Elevación sutil al pasar el mouse */
+}
+
+.sidebar-item.logout {
+    background-color: #ff4c4c;
+    color: white;
+    margin-top: auto; /* Posicionar al final */
+}
+
+.sidebar-item.logout:hover {
+    background-color: #e03e3e;
+}
+
+/* Estilos para el contenido principal */
+.content {
+    flex: 1;
+    padding: 2rem;
+    margin-left: 250px; /* Ajustado al máximo ancho de la barra lateral */
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column; /* Aseguramos que los elementos internos se posicionen en columna */
+    align-items: center; /* Centramos el contenido horizontalmente */
+    background: linear-gradient(135deg, #6A0DAD, #8A2BE2);
+    transition: margin-left 0.3s ease;
+}
+
+/* Títulos */
+h2 {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 1rem;
+    text-align: center; /* Centramos el texto */
+}
+
+/* Contenedores de Consejos y Actividades */
+.tips-container, .activities-container {
+    background-color: rgba(255, 255, 255, 0.6);
+    padding: 2rem;
+    border-radius: 15px;
+    width: 50%; /* Reducimos el ancho para hacerlo más compacto y alineado al centro */
+    max-width: 800px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    text-align: left;
+    margin-top: 1.5rem; /* Espacio extra desde el título */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centramos el contenido del recuadro */
+}
+
+/* Media Queries para pantallas más pequeñas */
+@media (max-width: 1200px) {
+    .sidebar {
+        width: 25%;
+        max-width: 200px;
+        min-width: 120px;
+        padding: 1.5rem 0.8rem;
+    }
+
+    .content {
+        margin-left: 200px;
+    }
+
+    .tips-container, .activities-container {
+        width: 70%;
+    }
+
+    h2 {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .sidebar {
+        width: 30%;
+        max-width: 180px;
+        min-width: 100px;
+        padding: 1rem 0.5rem;
+    }
+
+    .content {
+        margin-left: 180px;
+    }
+
+    .tips-container, .activities-container {
+        width: 80%;
+    }
+
+    h2 {
+        font-size: 1.6rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .home-container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        top: 0;
+        left: 0;
+        box-shadow: none;
+    }
+
+    .content {
+        margin-left: 0;
+        padding: 1rem;
+    }
+
+    .tips-container, .activities-container {
+        width: 100%;
+    }
+
+    h2 {
+        font-size: 1.4rem;
+    }
+
+    .profile-title {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .sidebar-item {
+        font-size: 0.9rem;
+        padding: 0.6rem 0.8rem;
+    }
+
+    .tips-container, .activities-container {
+        padding: 1.5rem;
+    }
+
+    h2 {
+        font-size: 1.2rem;
+    }
+
+    .profile-title {
+        font-size: 1.5rem;
+    }
+}
