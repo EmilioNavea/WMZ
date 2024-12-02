@@ -108,10 +108,16 @@ const CategorizationTest = ({ onComplete }) => {
     Object.keys(answers).forEach(category => {
       categoryScores[category] = answers[category]?.reduce((acc, val) => acc + val, 0) || 0;
     });
-    
+
     const mostProblematicCategory = Object.entries(categoryScores).reduce((max, current) => {
       return current[1] > max[1] ? current : max;
-    }, ['', -Infinity])[0];
+    }, ['', 0])[0];
+
+    if (!mostProblematicCategory) {
+      alert("Por favor responde al menos a una pregunta.");
+      setSubmitted(false);
+      return;
+    }
 
     const user = auth.currentUser;
     if (user) {
@@ -123,7 +129,7 @@ const CategorizationTest = ({ onComplete }) => {
         lastCategorizationCompleted: Timestamp.now(),
       }, { merge: true });
 
-      await setDoc(testRef, { weeklyTestResults2: mostProblematicCategory }, { merge: true });
+      await setDoc(testRef, { weeklyTestResults1: categoryScores }, { merge: true });
 
       onComplete(mostProblematicCategory);
     }

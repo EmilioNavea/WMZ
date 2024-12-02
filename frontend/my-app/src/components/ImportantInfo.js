@@ -13,8 +13,7 @@ const ImportantInfo = () => {
         <button className="sidebar-item" onClick={() => navigate('/profile')}>Perfil</button>
         <button className="sidebar-item" onClick={() => navigate('/tips')}>Consejos</button>
         <button className="sidebar-item" onClick={() => navigate('/activities')}>Actividades</button>
-        <button className="sidebar-item" onClick={() => navigate('/important-info')}>Información de Importancia</button>
-        <button className="sidebar-item" onClick={() => navigate('/worker-status')}>Estado de Trabajadores</button>
+        <button className="sidebar-item" onClick={() => navigate('/workers-status')}>Estado de Trabajadores</button>
         <button className="sidebar-item logout" onClick={() => {
           auth.signOut();
           navigate('/');

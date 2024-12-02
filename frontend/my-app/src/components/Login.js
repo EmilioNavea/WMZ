@@ -50,7 +50,7 @@ const Login = ({ onSwitch }) => {
   return (
     <div className="App">
       <div className="container">
-        <div className="title">Bienvenido a WorkMind Zen</div>
+        <div className="title">𝓑𝓲𝓮𝓷𝓿𝓮𝓷𝓲𝓭𝓸 𝓪 𝓦𝓸𝓻𝓴𝓜𝓲𝓷𝓭 𝓩𝓮𝓷</div>
         <form onSubmit={handleLogin}>
           <input
             type="email"

@@ -77,13 +77,14 @@
     width: 100%;
     max-width: 800px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
     margin-top: 200px; /* Mueve la caja hacia abajo para mayor separación */
+    margin-left: -8%;
     text-align: left;
 }
 
 /* Caja de actividades o consejos */
-.content-box2 {
+.content-boxx {
     background-color: #b896ba;
     padding: 3.5rem;
     border-radius: 50px;
@@ -92,6 +93,7 @@
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     margin-bottom: 2rem;
     margin-top: 200px; /* Mueve la caja hacia abajo para mayor separación */
+    margin-left: -10%;
     text-align: left;
 }
 

@@ -24,11 +24,11 @@ const Home = () => {
         <button onClick={() => handleNavigation('tips')} className="sidebar-item">Consejos</button> {/* Redirección a la pestaña de Consejos */}
         <button onClick={() => handleNavigation('activities')} className="sidebar-item">Actividades</button> {/* Redirección a la pestaña de Actividades */}
         <button onClick={() => handleNavigation('important-info')} className="sidebar-item">Información de Importancia</button>
-        <button onClick={() => handleNavigation('worker-status')} className="sidebar-item">Estado Trabajadores</button>
+        <button onClick={() => handleNavigation('workers-status')} className="sidebar-item">Estado Trabajadores</button>
         <button onClick={() => handleNavigation('logout')} className="sidebar-item logout">Cerrar Sesión</button>
       </nav>
-      <div className="content">
-        <h1>Bienvenido a WorkMind Zen</h1>
+      <div className="content1">
+        <h1>𝓑𝓲𝓮𝓷𝓿𝓮𝓷𝓲𝓭𝓸 𝓪 𝓦𝓸𝓻𝓴𝓜𝓲𝓷𝓭 𝓩𝓮𝓷</h1>
       </div>
     </div>
   );

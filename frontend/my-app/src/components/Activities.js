@@ -1,7 +1,6 @@
-// src/components/Activities.js
 import React, { useState, useEffect } from 'react';
 import { db, auth } from '../services/firebase';
-import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, getDoc, setDoc } from 'firebase/firestore';
 import GeneralTest from './GeneralTest';
 import CategorizationTest from './CategorizationTest';
 import { useNavigate } from 'react-router-dom';
@@ -61,6 +60,30 @@ const Activities = () => {
     fetchActivities();
   }, [testCompleted, problemCategory]);
 
+  // Contador de acceso a la pestaña de Actividades
+  useEffect(() => {
+    const trackAccess = async () => {
+        const user = auth.currentUser;
+        if (user) {
+            const today = new Date().toISOString().split('T')[0]; // formato YYYY-MM-DD
+            const userRef = doc(db, 'users', user.uid, 'usage', today);
+            const userUsage = await getDoc(userRef);
+
+            if (userUsage.exists()) {
+                // Actualizar solo counterA
+                await setDoc(userRef, {
+                    counterA: (userUsage.data().counterA || 0) + 1,
+                    counterC: userUsage.data().counterC || 0, // Mantener el valor existente
+                }, { merge: true });
+            } else {
+                // Crear documento inicial con counterA y guardar la fecha en "day"
+                await setDoc(userRef, { counterA: 1, counterC: 0, day: today });
+            }
+        }
+    };
+    trackAccess();
+}, []);
+
   if (generalTestNeeded) {
     return (
       <GeneralTest
@@ -89,15 +112,18 @@ const Activities = () => {
 
   return (
     <div className="home-container">
-      <nav className="sidebar">
-        <button onClick={() => navigate('/profile')} className="sidebar-item">Perfil</button>
-        <button onClick={() => navigate('/tips')} className="sidebar-item">Consejos</button>
-        <button onClick={() => navigate('/important-info')} className="sidebar-item">Información de Importancia</button>
-        <button onClick={() => navigate('/worker-status')} className="sidebar-item">Estado de Trabajadores</button>
-        <button onClick={() => auth.signOut()} className="sidebar-item logout">Cerrar Sesión</button>
-      </nav>
+<div className="sidebar">
+        <button className="sidebar-item" onClick={() => navigate('/profile')}>Perfil</button>
+        <button className="sidebar-item" onClick={() => navigate('/tips')}>Consejos</button>
+        <button className="sidebar-item" onClick={() => navigate('/important-info')}>Información de Importancia</button>
+        <button className="sidebar-item" onClick={() => navigate('/workers-status')}>Estado de Trabajadores</button>
+        <button className="sidebar-item logout" onClick={() => {
+          auth.signOut();
+          navigate('/');
+        }}>Cerrar Sesión</button>
+      </div>
       <div className="content">
-        <div className="content-box2">
+        <div className="content-boxx">
           <h2>Actividades Semanales</h2>
           <ul className="activity-list">
             {activities.map((activity, index) => (

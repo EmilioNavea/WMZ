@@ -54,29 +54,38 @@
     background-color: #e03e3e;
   }
   
-  /* Estilos para el contenido principal */
-  .content {
-    flex: 1;
-    padding: 2rem;
-    margin-left: 250px; /* Ajustado al máximo ancho de la barra lateral */
-    overflow-y: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #6A0DAD, #8A2BE2);
-    transition: margin-left 0.3s ease;
-  }
-  
-  /* Estilos para las cajas de información y perfil */
-  .info-box, .profile-box {
-    background-color: rgba(255, 255, 255, 0.6);
-    padding: 2rem;
-    border-radius: 15px;
-    width: 60%; /* Ancho relativo */
-    max-width: 800px; /* Máximo ancho */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    text-align: left; /* Alinear texto a la izquierda */
-  }
+/* Estilos para el contenedor principal */
+.content2 {
+  flex: 1;
+  padding: 2rem;
+  margin-left: 2px; /* Ajustado al máximo ancho de la barra lateral */
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column; /* Asegura que el contenido se apile correctamente */
+  align-items: center; /* Centra el contenido horizontalmente */
+  justify-content: flex-start; /* Ajusta el contenido al inicio (parte superior) */
+  background: linear-gradient(135deg, #6A0DAD, #8A2BE2);
+  transition: margin-left 0.3s ease;
+}
+
+/* Estilos para las cajas de información y perfil */
+.info-box, .profile-box {
+  background-color: rgba(255, 255, 255, 0.8); /* Aumentar opacidad para mayor visibilidad */
+  padding: 3rem; /* Reducir el padding para más espacio alrededor */
+  border-radius: 15px;
+  width: 85%; /* Reducir el ancho para una mejor disposición */
+  max-width: 800px; /* Máximo ancho */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  text-align: left; /* Alinear texto a la izquierda */
+  margin: 10rem 0; /* Añadir un margen superior e inferior para separación */
+  transition: all 0.3s ease; /* Suaviza la transición de cualquier cambio */
+}
+
+/* Estilo para cuando las cajas están en el modo de hover (cuando el ratón pasa sobre ellas) */
+.info-box:hover, .profile-box:hover {
+  transform: translateY(-5px); /* Eleva ligeramente las cajas */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3); /* Más sombra para el efecto */
+}
   
   /* Títulos */
   h2 {

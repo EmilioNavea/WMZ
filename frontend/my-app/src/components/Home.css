@@ -68,6 +68,18 @@
   transition: margin-left 0.3s ease;
 }
 
+.content1 {
+  flex: 1;
+  padding: 2rem;
+  margin-left: 250px;
+  overflow-y: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #6A0DAD, #8A2BE2);
+  transition: margin-left 0.3s ease;
+}
+
 /* Estilos para las cajas de información y perfil */
 .info-box, .profile-box {
   background-color: rgba(255, 255, 255, 0.6);
